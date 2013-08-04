@@ -53,37 +53,11 @@ public class MultilauncherConfigurationDelegate extends LaunchConfigurationDeleg
 				}
 				
 				if(conf.getEnabled()) {
-					if (!conf.getLaunchConfiguration().supportsMode(localMode)) {
-						PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-							@Override
-							public void run() {
-								MessageDialog.openError(
-										PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-										PluginMessages.LaunchUIPlugin_Error,  
-										NLS.bind(
-												PluginMessages.MultiLaunchConfigurationDelegate_Cannot, 
-												conf.getLaunchConfiguration().toString(), 
-												localMode
-										)
-								);
-							}
-						});
-						
+					if (!isConfCompatinleWithMode(conf, localMode)) {
+						showNotCompatibeModeError(conf, localMode);
 					} else {
-						if (configuration.getName().equals(conf.getLaunchRef())) {
-							PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-								@Override
-								public void run() {
-									MessageDialog.openError(
-											PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-											PluginMessages.LaunchUIPlugin_Error, 
-											NLS.bind(
-													PluginMessages.MultiLaunchConfigurationDelegate_Loop, 
-													conf.toString()
-											)
-									);
-								}
-							});
+						if (isTheSameConf(configuration, conf)) {
+							showLoopError(conf);
 						} else {
 							ILaunch subLaunch = DebugUIPlugin.buildAndLaunch(
 									conf.getLaunchConfiguration(), 
@@ -105,6 +79,50 @@ public class MultilauncherConfigurationDelegate extends LaunchConfigurationDeleg
 			prefStore.setValue(IDebugUIConstants.PREF_AUTO_REMOVE_OLD_LAUNCHES, dstore);
 			monitor.done();
 		}
+	}
+
+	private void showLoopError(final SublaunchConfiguration conf) {
+		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				MessageDialog.openError(
+						PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+						PluginMessages.LaunchUIPlugin_Error, 
+						NLS.bind(
+								PluginMessages.MultiLaunchConfigurationDelegate_Loop, 
+								conf.toString()
+						)
+				);
+			}
+		});
+	}
+
+	private void showNotCompatibeModeError(final SublaunchConfiguration conf,
+			final String localMode) {
+		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				MessageDialog.openError(
+						PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+						PluginMessages.LaunchUIPlugin_Error,  
+						NLS.bind(
+								PluginMessages.MultiLaunchConfigurationDelegate_Cannot, 
+								conf.getLaunchConfiguration().toString(), 
+								localMode
+						)
+				);
+			}
+		});
+	}
+
+	private boolean isTheSameConf(ILaunchConfiguration configuration,
+			final SublaunchConfiguration conf) {
+		return configuration.getName().equals(conf.getLaunchRef());
+	}
+
+	private boolean isConfCompatinleWithMode(final SublaunchConfiguration conf,
+			final String localMode) throws CoreException {
+		return conf.getLaunchConfiguration().supportsMode(localMode);
 	}
 
 	private void postLaunchAction(ILaunch sublaunch, SublaunchConfiguration conf, IProgressMonitor monitor) {
