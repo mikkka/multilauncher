@@ -6,17 +6,19 @@ public class SublaunchConfiguration {
 	private String launchRef;
 	private String mode;
 	private ILaunchConfiguration launchConfiguration;
+	private Boolean enabled;
 
 	private Boolean waitForTerminateAfetrLaunch;
 	private Integer pauseBeforeNextInSecs;
 	
 	public SublaunchConfiguration(String launchRef, String mode,
-			ILaunchConfiguration launchConfiguration,
+			ILaunchConfiguration launchConfiguration, Boolean enabled,
 			boolean waitForTerminateAfetrLaunch, int pauseBeforeNextInSecs) {
 		super();
 		this.launchRef = launchRef;
 		this.mode = mode;
 		this.launchConfiguration = launchConfiguration;
+		this.enabled = enabled;
 		this.waitForTerminateAfetrLaunch = waitForTerminateAfetrLaunch;
 		this.pauseBeforeNextInSecs = pauseBeforeNextInSecs;
 	}
@@ -45,6 +47,14 @@ public class SublaunchConfiguration {
 		this.launchConfiguration = launchConfiguration;
 	}
 	
+	public Boolean getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
+
 	public Boolean isWaitForTerminateAfetrLaunch() {
 		return waitForTerminateAfetrLaunch;
 	}

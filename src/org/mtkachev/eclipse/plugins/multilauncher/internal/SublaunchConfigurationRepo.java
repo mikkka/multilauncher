@@ -17,6 +17,7 @@ public class SublaunchConfigurationRepo {
 	private static String PROP_IDX = "idx";
 	private static String PROP_REF = "lauchRef";
 	private static String PROP_MODE = "mode";
+	private static String PROP_ENABLED = "wait_term";
 	private static String PROP_WAIT_TERMINATE = "wait_term";
 	private static String PROP_PAUSE = "pause";
 	
@@ -36,6 +37,7 @@ public class SublaunchConfigurationRepo {
 						launchRef,
 						(String)attrs.get(propKey(PROP_MODE, idx)),
 						conf,
+						"true".equals(attrs.get(propKey(PROP_ENABLED, idx))),
 						"true".equals(attrs.get(propKey(PROP_WAIT_TERMINATE, idx))),
 						Integer.parseInt((String)attrs.get(propKey(PROP_PAUSE, idx)))
 				));
@@ -56,6 +58,8 @@ public class SublaunchConfigurationRepo {
 			if(conf != null) {
 				configuration.setAttribute(propKey(PROP_REF, idx), conf.getLaunchRef());
 				configuration.setAttribute(propKey(PROP_MODE, idx), conf.getMode());
+				configuration.setAttribute(propKey(PROP_ENABLED, idx), 
+						conf.getEnabled().toString());
 				configuration.setAttribute(propKey(PROP_WAIT_TERMINATE, idx), 
 						conf.isWaitForTerminateAfetrLaunch().toString());
 				configuration.setAttribute(propKey(PROP_PAUSE, idx), 

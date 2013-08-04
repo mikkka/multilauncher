@@ -52,47 +52,49 @@ public class MultilauncherConfigurationDelegate extends LaunchConfigurationDeleg
 					localMode = mode;
 				}
 				
-				if (!conf.getLaunchConfiguration().supportsMode(localMode)) {
-					PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-						@Override
-						public void run() {
-							MessageDialog.openError(
-									PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-									PluginMessages.LaunchUIPlugin_Error,  
-									NLS.bind(
-											PluginMessages.MultiLaunchConfigurationDelegate_Cannot, 
-											conf.getLaunchConfiguration().toString(), 
-											localMode
-									)
-							);
-						}
-					});
-					
-				} else {
-					if (configuration.getName().equals(conf.getLaunchRef())) {
+				if(conf.getEnabled()) {
+					if (!conf.getLaunchConfiguration().supportsMode(localMode)) {
 						PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 							@Override
 							public void run() {
 								MessageDialog.openError(
 										PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-										PluginMessages.LaunchUIPlugin_Error, 
+										PluginMessages.LaunchUIPlugin_Error,  
 										NLS.bind(
-												PluginMessages.MultiLaunchConfigurationDelegate_Loop, 
-												conf.toString()
+												PluginMessages.MultiLaunchConfigurationDelegate_Cannot, 
+												conf.getLaunchConfiguration().toString(), 
+												localMode
 										)
 								);
 							}
 						});
-					} else {
-						ILaunch subLaunch = DebugUIPlugin.buildAndLaunch(
-								conf.getLaunchConfiguration(), 
-								localMode, 
-								new SubProgressMonitor(monitor, 1000 / confList.size()));
 						
-						((Multilaunch)launch).addSubLaunch(subLaunch);
-						((Multilaunch)launch).launchChanged(subLaunch);
-
-						postLaunchAction(subLaunch, conf, monitor);
+					} else {
+						if (configuration.getName().equals(conf.getLaunchRef())) {
+							PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+								@Override
+								public void run() {
+									MessageDialog.openError(
+											PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+											PluginMessages.LaunchUIPlugin_Error, 
+											NLS.bind(
+													PluginMessages.MultiLaunchConfigurationDelegate_Loop, 
+													conf.toString()
+											)
+									);
+								}
+							});
+						} else {
+							ILaunch subLaunch = DebugUIPlugin.buildAndLaunch(
+									conf.getLaunchConfiguration(), 
+									localMode, 
+									new SubProgressMonitor(monitor, 1000 / confList.size()));
+							
+							((Multilaunch)launch).addSubLaunch(subLaunch);
+							((Multilaunch)launch).launchChanged(subLaunch);
+	
+							postLaunchAction(subLaunch, conf, monitor);
+						}
 					}
 				}
 			}
