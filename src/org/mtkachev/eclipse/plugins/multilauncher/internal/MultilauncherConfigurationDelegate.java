@@ -2,6 +2,7 @@ package org.mtkachev.eclipse.plugins.multilauncher.internal;
 
 import java.util.List;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -91,7 +92,7 @@ public class MultilauncherConfigurationDelegate extends LaunchConfigurationDeleg
 						((Multilaunch)launch).addSubLaunch(subLaunch);
 						((Multilaunch)launch).launchChanged(subLaunch);
 
-						//postLaunchAction(subLaunch, le.action, le.actionParam, monitor);
+						postLaunchAction(subLaunch, conf, monitor);
 					}
 				}
 			}
@@ -104,9 +105,40 @@ public class MultilauncherConfigurationDelegate extends LaunchConfigurationDeleg
 		}
 	}
 
+	private void postLaunchAction(ILaunch sublaunch, SublaunchConfiguration conf, IProgressMonitor monitor) {
+		if(conf.isWaitForTerminateAfetrLaunch()) {
+			monitor.subTask(
+					PluginMessages.MultiLaunchConfigurationDelegate_Action_WaitingForTermination + 
+					" " + 
+					sublaunch.getLaunchConfiguration().getName());
+			while (!sublaunch.isTerminated() && !monitor.isCanceled()) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					break;
+				}
+			}
+			monitor.subTask("");
+		} else {
+			Integer waitTimeInSecs = conf.getPauseBeforeNextInSecs(); 
+			if(waitTimeInSecs > 0) {
+				monitor.subTask(
+						NLS.bind(PluginMessages.MultiLaunchConfigurationDelegate_Action_Delaying, 
+								waitTimeInSecs.toString()));			
+				try {
+					Thread.sleep(waitTimeInSecs * 1000);
+				} catch (InterruptedException e) {
+				}
+			}
+		}
+	}
+
 	public boolean buildForLaunch(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor)
 			throws CoreException {
-		// not build for this one
 		return false;
+	}
+
+	@Override
+	protected void buildProjects(IProject[] projects, IProgressMonitor monitor) throws CoreException {
 	}
 }
