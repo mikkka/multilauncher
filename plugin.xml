@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="org.mtkachev.eclipse.plugins.multilauncher.internal.MultilauncherConfigurationDelegate"
+            id="org.mtkachev.eclipse.plugins.multilauncher.launchConfigurationType1"
+            modes="run"
+            name="MultiLaunch">
+      </launchConfigurationType>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class="org.mtkachev.eclipse.plugins.multilauncher.ui.MultilauncherTabGroup"
+            id="org.mtkachev.eclipse.plugins.multilauncher.launchConfigurationTabGroup"
+            type="org.mtkachev.eclipse.plugins.multilauncher.launchConfigurationType1">
+      </launchConfigurationTabGroup>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+      <launchConfigurationTypeImage
+            configTypeID="org.mtkachev.eclipse.plugins.multilauncher.launchConfigurationType1"
+            icon="icons/multilaunch.gif"
+            id="org.mtkachev.eclipse.plugins.multilauncher.launchConfigurationTypeImage1">
+      </launchConfigurationTypeImage>
+   </extension>
+
+</plugin>
