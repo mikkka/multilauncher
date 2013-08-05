@@ -28,19 +28,21 @@ public class SublaunchConfigurationRepo {
 			Map<?,?> attrs = configuration.getAttributes();
 
 			String idxStr = (String)attrs.get(propKey(PROP_IDX));
-			int maxIdx = Integer.parseInt(idxStr);
-			
-			for(int idx = 0; idx <= maxIdx; idx++) {
-				String launchRef = (String) attrs.get(propKey(PROP_REF, idx));
-				ILaunchConfiguration conf = findLaunch(launchRef);
-				sublaunchList.add(new SublaunchConfiguration(
-						launchRef,
-						(String)attrs.get(propKey(PROP_MODE, idx)),
-						conf,
-						"true".equals(attrs.get(propKey(PROP_ENABLED, idx))),
-						"true".equals(attrs.get(propKey(PROP_WAIT_TERMINATE, idx))),
-						Integer.parseInt((String)attrs.get(propKey(PROP_PAUSE, idx)))
-				));
+			if(idxStr != null) {
+				int maxIdx = Integer.parseInt(idxStr);
+				
+				for(int idx = 0; idx <= maxIdx; idx++) {
+					String launchRef = (String) attrs.get(propKey(PROP_REF, idx));
+					ILaunchConfiguration conf = findLaunch(launchRef);
+					sublaunchList.add(new SublaunchConfiguration(
+							launchRef,
+							(String)attrs.get(propKey(PROP_MODE, idx)),
+							conf,
+							"true".equals(attrs.get(propKey(PROP_ENABLED, idx))),
+							"true".equals(attrs.get(propKey(PROP_WAIT_TERMINATE, idx))),
+							Integer.parseInt((String)attrs.get(propKey(PROP_PAUSE, idx)))
+					));
+				}
 			}
 		} catch (CoreException e) {
 			MultilauncherPlugin.log(e);
@@ -67,7 +69,7 @@ public class SublaunchConfigurationRepo {
 				idx++;
 			}
 		}
-		configuration.setAttribute(propKey(PROP_IDX), idx - 1);
+		configuration.setAttribute(propKey(PROP_IDX), String.valueOf(idx - 1));
 	}
 	
 	private String propKey(String propName) {
