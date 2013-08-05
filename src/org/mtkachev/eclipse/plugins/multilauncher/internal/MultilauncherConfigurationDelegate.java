@@ -139,16 +139,16 @@ public class MultilauncherConfigurationDelegate extends LaunchConfigurationDeleg
 				}
 			}
 			monitor.subTask("");
-		} else {
-			Integer waitTimeInSecs = conf.getPauseBeforeNextInSecs(); 
-			if(waitTimeInSecs > 0) {
-				monitor.subTask(
-						NLS.bind(PluginMessages.MultiLaunchConfigurationDelegate_Action_Delaying, 
-								waitTimeInSecs.toString()));			
-				try {
-					Thread.sleep(waitTimeInSecs * 1000);
-				} catch (InterruptedException e) {
-				}
+		}
+		
+		Integer waitTimeInSecs = conf.getPauseBeforeNextInSecs(); 
+		if(waitTimeInSecs > 0) {
+			monitor.subTask(
+					NLS.bind(PluginMessages.MultiLaunchConfigurationDelegate_Action_Delaying, 
+							waitTimeInSecs.toString()));			
+			try {
+				Thread.sleep(waitTimeInSecs * 1000);
+			} catch (InterruptedException e) {
 			}
 		}
 	}
