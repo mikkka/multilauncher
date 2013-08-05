@@ -11,6 +11,10 @@ public class PluginMessages extends NLS {
 	public static String MultiLaunchConfigurationDelegate_Action_Delay;
 	public static String MultiLaunchConfigurationDelegate_Action_WaitingForTermination;
 	public static String MultiLaunchConfigurationDelegate_Action_Delaying;
+	public static String LaunchConfigurationTab_Title;
+	public static String MultiLaunchConfigurationTabGroup_Table_Enable;
+	public static String MultiLaunchConfigurationTabGroup_Table_Name;
+	public static String MultiLaunchConfigurationTabGroup_Table_Mode;
 
 	private PluginMessages() {
 	}
