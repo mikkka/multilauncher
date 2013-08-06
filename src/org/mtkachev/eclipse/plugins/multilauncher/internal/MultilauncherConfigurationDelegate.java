@@ -16,6 +16,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.activities.WorkbenchActivityHelper;
 import org.mtkachev.eclipse.plugins.multilauncher.PluginMessages;
 
 public class MultilauncherConfigurationDelegate extends LaunchConfigurationDelegate implements ILaunchConfigurationDelegate2 {
@@ -39,7 +40,7 @@ public class MultilauncherConfigurationDelegate extends LaunchConfigurationDeleg
 		boolean dstore = prefStore.getBoolean(IDebugUIConstants.PREF_AUTO_REMOVE_OLD_LAUNCHES);
 
 		try {
-			monitor.beginTask(PluginMessages.MultiLaunchConfigurationDelegate_0 + configuration.getName(), 1000); 
+			monitor.beginTask(PluginMessages.MultiLaunchConfigurationDelegate_Task + configuration.getName(), 1000); 
 			
 			prefStore.setValue(IDebugUIConstants.PREF_AUTO_REMOVE_OLD_LAUNCHES,	false);
 			
@@ -87,7 +88,7 @@ public class MultilauncherConfigurationDelegate extends LaunchConfigurationDeleg
 			public void run() {
 				MessageDialog.openError(
 						PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-						PluginMessages.LaunchUIPlugin_Error, 
+						PluginMessages.MultiLaunchPlugin_Error, 
 						NLS.bind(
 								PluginMessages.MultiLaunchConfigurationDelegate_Loop, 
 								conf.toString()
@@ -104,7 +105,7 @@ public class MultilauncherConfigurationDelegate extends LaunchConfigurationDeleg
 			public void run() {
 				MessageDialog.openError(
 						PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-						PluginMessages.LaunchUIPlugin_Error,  
+						PluginMessages.MultiLaunchPlugin_Error,  
 						NLS.bind(
 								PluginMessages.MultiLaunchConfigurationDelegate_Cannot, 
 								conf.getLaunchConfiguration().toString(), 
@@ -151,6 +152,10 @@ public class MultilauncherConfigurationDelegate extends LaunchConfigurationDeleg
 			} catch (InterruptedException e) {
 			}
 		}
+	}
+
+	public static boolean isValidLaunchReference(ILaunchConfiguration config) {
+		return DebugUIPlugin.doLaunchConfigurationFiltering( config) && !WorkbenchActivityHelper.filterItem(config);
 	}
 
 	public boolean buildForLaunch(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor)
