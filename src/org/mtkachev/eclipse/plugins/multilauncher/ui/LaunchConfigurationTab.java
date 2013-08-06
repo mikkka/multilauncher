@@ -81,6 +81,26 @@ public class LaunchConfigurationTab extends AbstractLaunchConfigurationTab {
 	private final SelectionListener editButtonSelectListener = new SelectionAdapter() {
 	    @Override
 	    public void widgetSelected(SelectionEvent e) {
+			StructuredSelection selection = (StructuredSelection) treeViewer.getSelection();
+			if(selection.size() == 1) {
+				SublaunchConfiguration conf = (SublaunchConfiguration) selection.iterator().next();
+				LaunchConfigurationDialog dialog = 
+						LaunchConfigurationDialog.createDialog(treeViewer.getControl().getShell(), conf);
+				if (dialog.open() == Dialog.OK) {
+					ILaunchConfiguration[] confs = dialog.getSelectedLaunchConfigurations();
+					if (confs.length == 1) {
+						//TODO: use directly SublaunchConfiguration in dialog 
+						conf.setLaunchRef(confs[0].getName());
+						conf.setLaunchConfiguration(confs[0]);
+						conf.setMode(dialog.getMode());
+						conf.setWaitForTerminateAfetrLaunch(dialog.isWaitForTerminate());
+						conf.setPauseBeforeNextInSecs(dialog.getPauseBeforeNextInSecs());
+						treeViewer.refresh(true);
+						updateButtonsState();
+						updateLaunchConfigurationDialog();
+					}
+				}
+			}
 	    }
 	};
 	

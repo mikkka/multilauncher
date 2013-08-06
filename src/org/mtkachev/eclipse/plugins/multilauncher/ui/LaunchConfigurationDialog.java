@@ -89,6 +89,16 @@ public class LaunchConfigurationDialog extends TitleAreaDialog implements ISelec
 			}
 		};
 	}
+	
+	public LaunchConfigurationDialog(Shell shell, SublaunchConfiguration sublaunchConfiguration) {
+		this(shell, sublaunchConfiguration.getMode(), true);
+		if(MultilauncherConfigurationDelegate.isValidLaunchReference(sublaunchConfiguration.getLaunchConfiguration())) {
+			isDefaultMode = MultilauncherConfigurationDelegate.DEFAULT_MODE.equals(sublaunchConfiguration.getMode());
+			pauseBeforeNextInSecs = sublaunchConfiguration.getPauseBeforeNextInSecs();
+			waitForTerminate = sublaunchConfiguration.isWaitForTerminateAfetrLaunch();
+			initialSelection = new StructuredSelection(sublaunchConfiguration.getLaunchConfiguration());
+		}
+	}
 
 	protected ILaunchManager getLaunchManager() {
 		return DebugPlugin.getDefault().getLaunchManager();
@@ -259,6 +269,10 @@ public class LaunchConfigurationDialog extends TitleAreaDialog implements ISelec
 		return new LaunchConfigurationDialog(shell, groupId, forEditing);
 	}
 
+	public static LaunchConfigurationDialog createDialog(Shell shell, SublaunchConfiguration conf) {
+		return new LaunchConfigurationDialog(shell, conf);
+	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.jface.viewers.ISelectionChangedListener#selectionChanged(org.eclipse.jface.viewers.SelectionChangedEvent)
 	 */
@@ -313,19 +327,21 @@ public class LaunchConfigurationDialog extends TitleAreaDialog implements ISelec
 		}
 
 		if (isValid) {
-			String delayStr = pauseBeforeNextText.getText();
-			boolean badDelay = false;
-			Integer delay = 0;
-			try {
- 				delay = Integer.parseInt(delayStr);
-			} catch (NumberFormatException nfe) {
-				badDelay = true;
-			}
-			if(delay < 0) {
-				badDelay = true;
-			}
-			if(badDelay) {
-				setErrorMessage(PluginMessages.LaunchConfigurationDialog_Invalid_DelayNotNumeric); 
+			if(pauseBeforeNextText != null) {
+				String delayStr = pauseBeforeNextText.getText();
+				boolean badDelay = false;
+				Integer delay = 0;
+				try {
+	 				delay = Integer.parseInt(delayStr);
+				} catch (NumberFormatException nfe) {
+					badDelay = true;
+				}
+				if(delay < 0) {
+					badDelay = true;
+				}
+				if(badDelay) {
+					setErrorMessage(PluginMessages.LaunchConfigurationDialog_Invalid_DelayNotNumeric); 
+				}
 			}
 		}
 		
