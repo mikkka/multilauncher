@@ -344,6 +344,17 @@ public class LaunchConfigurationTab extends AbstractLaunchConfigurationTab {
 
 	@Override
 	public boolean isValid(ILaunchConfiguration launchConfig) {
+		// all sub configs are valid
+		setMessage(null);
+		setErrorMessage(null);
+		for (SublaunchConfiguration conf : sublaunchConfigurationsList) {
+			if(conf.getLaunchConfiguration() == null) {
+				return false;
+			}
+			if(!MultilauncherConfigurationDelegate.isValidLaunchReference(conf.getLaunchConfiguration())) {
+				return false;
+			}
+		}
 		return true;
 	}
 
