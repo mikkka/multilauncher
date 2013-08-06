@@ -1,5 +1,6 @@
 package org.mtkachev.eclipse.plugins.multilauncher.ui;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
@@ -70,6 +71,7 @@ public class LaunchConfigurationTab extends AbstractLaunchConfigurationTab {
 						treeViewer.refresh(true);
 						treeViewer.setChecked(subConfiguration, true);
 					}
+					treeViewer.refresh();
 					updateButtonsState();
 					updateLaunchConfigurationDialog();
 				}
@@ -85,6 +87,13 @@ public class LaunchConfigurationTab extends AbstractLaunchConfigurationTab {
 	private final SelectionListener removeButtonSelectListener = new SelectionAdapter() {
 	    @Override
 	    public void widgetSelected(SelectionEvent e) {
+			StructuredSelection selection = (StructuredSelection) treeViewer.getSelection();
+			for (Iterator<?> iter = selection.iterator(); iter.hasNext(); ) {
+				sublaunchConfigurationsList.remove(iter.next());
+			}
+			treeViewer.refresh();
+			updateButtonsState();
+			updateLaunchConfigurationDialog();
 	    }
 	};
 	
