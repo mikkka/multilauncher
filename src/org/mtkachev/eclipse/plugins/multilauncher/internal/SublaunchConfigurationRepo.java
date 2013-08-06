@@ -17,7 +17,7 @@ public class SublaunchConfigurationRepo {
 	private static String PROP_IDX = "idx";
 	private static String PROP_REF = "lauchRef";
 	private static String PROP_MODE = "mode";
-	private static String PROP_ENABLED = "wait_term";
+	private static String PROP_ENABLED = "enabled";
 	private static String PROP_WAIT_TERMINATE = "wait_term";
 	private static String PROP_PAUSE = "pause";
 	
