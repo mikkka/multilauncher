@@ -334,6 +334,13 @@ public class LaunchConfigurationDialog extends TitleAreaDialog implements ISelec
 		}
 	}
 	
+	public Integer getPauseBeforeNextInSecs() {
+		return pauseBeforeNextInSecs;
+	}
+
+	public boolean isWaitForTerminate() {
+		return waitForTerminate;
+	}
 
 	public void setInitialSelection(SublaunchConfiguration conf) {
 		isDefaultMode = conf.getMode().equals(MultilauncherConfigurationDelegate.DEFAULT_MODE);

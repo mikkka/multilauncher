@@ -12,9 +12,14 @@ public class PluginMessages extends NLS {
 	public static String MultiLaunchConfigurationDelegate_Action_WaitingForTermination;
 	public static String MultiLaunchConfigurationDelegate_Action_Delaying;
 	public static String LaunchConfigurationTab_Title;
-	public static String MultiLaunchConfigurationTabGroup_Table_Enable;
-	public static String MultiLaunchConfigurationTabGroup_Table_Name;
-	public static String MultiLaunchConfigurationTabGroup_Table_Mode;
+	public static String LaunchConfigurationTab_Table_Name;
+	public static String LaunchConfigurationTab_Table_Mode;
+	public static String LaunchConfigurationTab_Table_AfterLaunch;
+	public static String LaunchConfigurationTab_Table_Mode_WT;
+	public static String LaunchConfigurationTab_Table_Mode_Pause;
+	public static String LaunchConfigurationTab_AddButton;
+	public static String LaunchConfigurationTab_EditButton;
+	public static String LaunchConfigurationTab_RemoveButton;
 	public static String LaunchConfigurationDialog_Titile_Edit;
 	public static String LaunchConfigurationDialog_Titile_Create;
 	public static String LaunchConfigurationDialog_LaunchModeLabel;
