@@ -23,10 +23,21 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.*;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSource;
+import org.eclipse.swt.dnd.DragSourceEvent;
+import org.eclipse.swt.dnd.DragSourceListener;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetAdapter;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.ISharedImages;
@@ -317,9 +328,109 @@ public class LaunchConfigurationTab extends AbstractLaunchConfigurationTab {
 		layoutData.verticalAlignment = SWT.BEGINNING;
 		butComposite.setLayoutData(layoutData);
 		
+		addDragAndDropBehaviour(tree);
+		
 		updateButtonsState();
 	}
 	
+	private void addDragAndDropBehaviour(final Tree tree) {
+		Transfer[] types = new Transfer[] {TextTransfer.getInstance()};
+		int operations = DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK;
+		
+		final DragSource source = new DragSource (tree, operations);
+		source.setTransfer(types);
+		final TreeItem[] dragSourceItem = new TreeItem[1];
+		source.addDragListener (new DragSourceListener () {
+			public void dragStart(DragSourceEvent event) {
+				TreeItem[] selection = tree.getSelection();
+				if (selection.length > 0 && selection[0].getItemCount() == 0) {
+					event.doit = true;
+					dragSourceItem[0] = selection[0];
+				} else {
+					event.doit = false;
+				}
+			};
+			public void dragSetData (DragSourceEvent event) {
+				event.data = dragSourceItem[0].getText();
+			}
+			public void dragFinished(DragSourceEvent event) {
+				if (event.detail == DND.DROP_MOVE)
+//					dragSourceItem[0].dispose();
+					dragSourceItem[0] = null;
+			}
+		});
+
+		DropTarget target = new DropTarget(tree, operations);
+		target.setTransfer(types);
+		target.addDropListener (new DropTargetAdapter() {
+			public void dragOver(DropTargetEvent event) {
+				event.feedback = DND.FEEDBACK_SCROLL;
+				if (event.item != null) {
+					TreeItem item = (TreeItem)event.item;
+					Point pt = tree.getDisplay().map(null, tree, event.x, event.y);
+					Rectangle bounds = item.getBounds();
+					if (pt.y < bounds.y + bounds.height/3) {
+						event.feedback |= DND.FEEDBACK_INSERT_BEFORE;
+					} else if (pt.y > bounds.y + 2*bounds.height/3) {
+						event.feedback |= DND.FEEDBACK_INSERT_AFTER;
+					}
+				}
+			}
+			public void drop(DropTargetEvent event) {
+				if (event.data == null) {
+					event.detail = DND.DROP_NONE;
+					return;
+				}
+				String text = (String)event.data;
+				if (event.item == null) {
+					TreeItem item = new TreeItem(tree, SWT.NONE);
+					item.setText(text);
+				} else {
+					TreeItem item = (TreeItem)event.item;
+					TreeItem sourceItem = dragSourceItem[0];
+					Point pt = tree.getDisplay().map(null, tree, event.x, event.y);
+					Rectangle bounds = item.getBounds();
+					TreeItem[] items = tree.getItems();
+					
+					int index = 0;
+					for (int i = 0; i < items.length; i++) {
+						if (items[i] == item) {
+							index = i;
+							break;
+						}
+					}
+
+					int indexSource = 0;
+					for (int i = 0; i < items.length; i++) {
+						if (items[i] == sourceItem) {
+							indexSource = i;
+							break;
+						}
+					}
+					if(indexSource <= index) {
+						index--;
+					}
+					if (pt.y < bounds.y + bounds.height/3) {
+						sublaunchConfigurationsList.remove(indexSource);
+						sublaunchConfigurationsList.add(index, (SublaunchConfiguration)sourceItem.getData());
+					}  else if (pt.y > bounds.y + 2*bounds.height/3) {
+						sublaunchConfigurationsList.remove(indexSource);
+						sublaunchConfigurationsList.add(index + 1, (SublaunchConfiguration)sourceItem.getData());
+					} else {
+						SublaunchConfiguration from = sublaunchConfigurationsList.get(indexSource);
+						SublaunchConfiguration to = sublaunchConfigurationsList.get(index + 1);
+						sublaunchConfigurationsList.set(indexSource, to);
+						sublaunchConfigurationsList.set(index + 1, from);
+					}
+						
+					treeViewer.refresh();
+					updateButtonsState();
+					updateLaunchConfigurationDialog();
+				}
+			}
+		});	
+	}
+
 	@Override
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
 	}
