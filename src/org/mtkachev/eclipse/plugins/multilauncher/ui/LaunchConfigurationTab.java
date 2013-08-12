@@ -334,7 +334,7 @@ public class LaunchConfigurationTab extends AbstractLaunchConfigurationTab {
 	
 	private void addDragAndDropBehaviour(final Tree table) {
 		Transfer[] types = new Transfer[] {TextTransfer.getInstance()};
-		int operations = DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK;
+		int operations = DND.DROP_MOVE;
 		
 		final DragSource source = new DragSource (table, operations);
 		source.setTransfer(types);
@@ -374,57 +374,52 @@ public class LaunchConfigurationTab extends AbstractLaunchConfigurationTab {
 					}
 				}
 			}
+			
+			private int idxByItem(TreeItem[] items, TreeItem item) {
+				for (int i = 0; i < items.length; i++) {
+					if (items[i] == item) {
+						return i;
+					}
+				
+				}
+				return 0;
+			}
+			
 			public void drop(DropTargetEvent event) {
 				if (event.data == null) {
 					event.detail = DND.DROP_NONE;
 					return;
 				}
-				String text = (String)event.data;
-				if (event.item == null) {
-					TreeItem item = new TreeItem(table, SWT.NONE);
-					item.setText(text);
-				} else {
-					TreeItem item = (TreeItem)event.item;
-					TreeItem sourceItem = dragSourceItem[0];
-					Point pt = table.getDisplay().map(null, table, event.x, event.y);
-					Rectangle bounds = item.getBounds();
-					TreeItem[] items = table.getItems();
-					
-					int index = 0;
-					for (int i = 0; i < items.length; i++) {
-						if (items[i] == item) {
-							index = i;
-							break;
-						}
-					}
 
-					int indexSource = 0;
-					for (int i = 0; i < items.length; i++) {
-						if (items[i] == sourceItem) {
-							indexSource = i;
-							break;
-						}
-					}
-					if(indexSource <= index) {
-						index--;
-					}
-					if (pt.y < bounds.y + bounds.height/3) {
-						sublaunchConfigurationsList.remove(indexSource);
-						sublaunchConfigurationsList.add(index, (SublaunchConfiguration)sourceItem.getData());
-					}  else if (pt.y > bounds.y + 2*bounds.height/3) {
-						sublaunchConfigurationsList.remove(indexSource);
-						sublaunchConfigurationsList.add(index + 1, (SublaunchConfiguration)sourceItem.getData());
-					} else {
-						SublaunchConfiguration from = sublaunchConfigurationsList.get(indexSource);
-						SublaunchConfiguration to = sublaunchConfigurationsList.get(index + 1);
-						sublaunchConfigurationsList.set(indexSource, to);
-						sublaunchConfigurationsList.set(index + 1, from);
-					}
-						
-					treeViewer.refresh();
-					updateButtonsState();
-					updateLaunchConfigurationDialog();
+				TreeItem[] items = table.getItems();
+				TreeItem item = event.item != null ? (TreeItem)event.item : items[items.length - 1];
+				TreeItem sourceItem = dragSourceItem[0];
+
+				Point pt = table.getDisplay().map(null, table, event.x, event.y);
+				Rectangle bounds = item.getBounds();
+
+				int index = idxByItem(items, item);
+				int indexSource = idxByItem(items, sourceItem);
+				if(indexSource <= index) {
+					index--;
 				}
+				
+				if (pt.y < bounds.y + bounds.height/3) {
+					sublaunchConfigurationsList.remove(indexSource);
+					sublaunchConfigurationsList.add(index, (SublaunchConfiguration)sourceItem.getData());
+				}  else if (pt.y > bounds.y + 2*bounds.height/3) {
+					sublaunchConfigurationsList.remove(indexSource);
+					sublaunchConfigurationsList.add(index + 1, (SublaunchConfiguration)sourceItem.getData());
+				} else {
+					SublaunchConfiguration from = sublaunchConfigurationsList.get(indexSource);
+					SublaunchConfiguration to = sublaunchConfigurationsList.get(index + 1);
+					sublaunchConfigurationsList.set(indexSource, to);
+					sublaunchConfigurationsList.set(index + 1, from);
+				}
+
+				treeViewer.refresh();
+				updateButtonsState();
+				updateLaunchConfigurationDialog();
 			}
 		});	
 	}
