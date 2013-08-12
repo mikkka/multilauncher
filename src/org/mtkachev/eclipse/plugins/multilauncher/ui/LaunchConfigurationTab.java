@@ -279,8 +279,7 @@ public class LaunchConfigurationTab extends AbstractLaunchConfigurationTab {
 		comp.setLayout(new GridLayout(2, false));
 
 		treeViewer = new CheckboxTreeViewer(comp, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
-		final Tree tree = treeViewer.getTree();
-		Tree table = treeViewer.getTree();
+		final Tree table = treeViewer.getTree();
 		table.setFont(parent.getFont());
 		
 		treeViewer.setContentProvider(new ContentProvider());
@@ -328,21 +327,21 @@ public class LaunchConfigurationTab extends AbstractLaunchConfigurationTab {
 		layoutData.verticalAlignment = SWT.BEGINNING;
 		butComposite.setLayoutData(layoutData);
 		
-		addDragAndDropBehaviour(tree);
+		addDragAndDropBehaviour(table);
 		
 		updateButtonsState();
 	}
 	
-	private void addDragAndDropBehaviour(final Tree tree) {
+	private void addDragAndDropBehaviour(final Tree table) {
 		Transfer[] types = new Transfer[] {TextTransfer.getInstance()};
 		int operations = DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK;
 		
-		final DragSource source = new DragSource (tree, operations);
+		final DragSource source = new DragSource (table, operations);
 		source.setTransfer(types);
 		final TreeItem[] dragSourceItem = new TreeItem[1];
 		source.addDragListener (new DragSourceListener () {
 			public void dragStart(DragSourceEvent event) {
-				TreeItem[] selection = tree.getSelection();
+				TreeItem[] selection = table.getSelection();
 				if (selection.length > 0 && selection[0].getItemCount() == 0) {
 					event.doit = true;
 					dragSourceItem[0] = selection[0];
@@ -359,14 +358,14 @@ public class LaunchConfigurationTab extends AbstractLaunchConfigurationTab {
 			}
 		});
 
-		DropTarget target = new DropTarget(tree, operations);
+		DropTarget target = new DropTarget(table, operations);
 		target.setTransfer(types);
 		target.addDropListener (new DropTargetAdapter() {
 			public void dragOver(DropTargetEvent event) {
 				event.feedback = DND.FEEDBACK_SCROLL;
 				if (event.item != null) {
 					TreeItem item = (TreeItem)event.item;
-					Point pt = tree.getDisplay().map(null, tree, event.x, event.y);
+					Point pt = table.getDisplay().map(null, table, event.x, event.y);
 					Rectangle bounds = item.getBounds();
 					if (pt.y < bounds.y + bounds.height/3) {
 						event.feedback |= DND.FEEDBACK_INSERT_BEFORE;
@@ -382,14 +381,14 @@ public class LaunchConfigurationTab extends AbstractLaunchConfigurationTab {
 				}
 				String text = (String)event.data;
 				if (event.item == null) {
-					TreeItem item = new TreeItem(tree, SWT.NONE);
+					TreeItem item = new TreeItem(table, SWT.NONE);
 					item.setText(text);
 				} else {
 					TreeItem item = (TreeItem)event.item;
 					TreeItem sourceItem = dragSourceItem[0];
-					Point pt = tree.getDisplay().map(null, tree, event.x, event.y);
+					Point pt = table.getDisplay().map(null, table, event.x, event.y);
 					Rectangle bounds = item.getBounds();
-					TreeItem[] items = tree.getItems();
+					TreeItem[] items = table.getItems();
 					
 					int index = 0;
 					for (int i = 0; i < items.length; i++) {
