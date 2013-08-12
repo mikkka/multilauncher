@@ -355,7 +355,6 @@ public class LaunchConfigurationTab extends AbstractLaunchConfigurationTab {
 			}
 			public void dragFinished(DragSourceEvent event) {
 				if (event.detail == DND.DROP_MOVE)
-//					dragSourceItem[0].dispose();
 					dragSourceItem[0] = null;
 			}
 		});
