@@ -400,21 +400,20 @@ public class LaunchConfigurationTab extends AbstractLaunchConfigurationTab {
 
 				int index = idxByItem(items, item);
 				int indexSource = idxByItem(items, sourceItem);
-				if(indexSource <= index) {
-					index--;
-				}
-				
+
 				if (pt.y < bounds.y + bounds.height/3) {
+					index = indexSource <= index ? index - 1 : index;
 					sublaunchConfigurationsList.remove(indexSource);
 					sublaunchConfigurationsList.add(index, (SublaunchConfiguration)sourceItem.getData());
 				}  else if (pt.y > bounds.y + 2*bounds.height/3) {
+					index = indexSource <= index ? index - 1 : index;
 					sublaunchConfigurationsList.remove(indexSource);
 					sublaunchConfigurationsList.add(index + 1, (SublaunchConfiguration)sourceItem.getData());
 				} else {
 					SublaunchConfiguration from = sublaunchConfigurationsList.get(indexSource);
-					SublaunchConfiguration to = sublaunchConfigurationsList.get(index + 1);
+					SublaunchConfiguration to = sublaunchConfigurationsList.get(index);
 					sublaunchConfigurationsList.set(indexSource, to);
-					sublaunchConfigurationsList.set(index + 1, from);
+					sublaunchConfigurationsList.set(index, from);
 				}
 
 				treeViewer.refresh();
