@@ -1,0 +1,4 @@
+multilauncher
+=============
+
+eclipse multilauncher plugin
